@@ -1,0 +1,338 @@
+---
+title: "Covid Vaccine By Political Affiliation (Only SECTION PAPER PART TWO)"
+author: "Felipe Castillo"
+date: '8/8/2021'
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+bibliography: bibliography.bib
+---
+
+#THis only has part two of the final paper the full paper will be added 
+#Start of week 9 part two
+
+
+```{r message=FALSE , echo=FALSE}
+library(dplyr)
+library(magrittr)
+library(ggplot2)
+political.affliation_df <- read.csv("data/Popular vote backend.csv")
+#view(political.affliation)
+
+# Removing none states with political influence and territories should only be 50
+# Dividing the states based on their political standing based on presidentals election.
+political.states_df <- political.affliation_df %>% filter(stateid != "" & nchar(stateid) < 3)
+
+political.mutate_df <- political.states_df %>% mutate(political_standing = 
+                                            case_when(called == "R" ~ "Red" ,
+                                                      called == "D" ~ "Blue"))
+
+political.mutate_df %>% ggplot(aes(x=as.factor(political_standing))) +  geom_bar()+ 
+ ggtitle("Political Affilations By Number Of States") + xlab("Number Of Votes") + ylab("Number of States Won")
+
+
+
+View(political.mutate_df)
+#sending on the state and color affiliation standing to  to be process in the next phase 
+#condensed version political standing
+political.selectState_df <- political.mutate_df %>%  select(state,political_standing)
+
+
+
+```
+
+
+
+#Getting Flu Vaccine Data To See if there is a correlation between covid #vaccine and flu vaccine
+```{r message=FALSE , echo=FALSE}
+
+library(ggplot2)
+setwd("/Intro_To_Statistics_DSC520/FinalPaperStatistics")
+
+influenza_df <- read.csv("data/influenza_vaccine_doses_distributed_in_the_united_states__by_season.csv")
+
+
+
+reAjustedDate.X <- c("08-09", "09-10", "10-11" , "11-12","12-13", "13-14", "14-15","15-16","16-17","17-18" ,"18-19","19-20")
+
+
+#Adding graph to show Flu line  graph.
+
+
+ggplot(data=influenza_df ,aes(x=Date, y=Cases_By_Mil, group=1)) +geom_line()+ ggtitle("Influenza Vaccine Injected") + xlab("Years 2008 - 2020") + ylab("Cases By Millions") + geom_point() + scale_x_discrete(labels= reAjustedDate.X )
+
+
+View(influenza_df)     	
+#2019-2020
+
+  
+flu_number_usa.vaccine <- influenza_df%>% filter(Date == "2019-2020") %>% select(Cases_By_Mil)
+
+
+View(flu_number_usa.vaccine)
+
+# equation in excel says by million 
+flu_number_usa.vaccine_numeric <- as.integer(flu_number_usa.vaccine) * 1000000
+
+flu_number_usa.vaccine <-  toString(format(flu_number_usa.vaccine_numeric, scientific = FALSE))
+
+flu_number_usa.vaccine
+
+```
+
+#look for AK
+
+```{R}
+
+#Getting fully vaccinated personal data 
+
+covid_df <- read.csv("data/owid-covid-data.csv")
+
+#Getting three parts fully vaccinated , partial , and combined data.
+
+
+covid_number_fully.vaccinated <- covid_df %>% filter(iso_code == "USA" & date == "2021-07-31") %>% select(people_fully_vaccinated)
+
+
+
+covid_number_partially.vaccinated <- covid_df %>% filter(iso_code == "USA" & date == "2021-07-31") %>% select(people_vaccinated)
+
+
+covid_number_total.vaccinated <- covid_df %>% filter(iso_code == "USA" & date == "2021-07-31") %>% select(total_vaccinations)
+
+
+
+View(covid_number_total.vaccinated)
+
+
+```
+
+
+
+
+
+
+```{R}
+
+#comparing fully vaccinated data flu vs covid.
+
+#According to google there is 328.2 million us citizens in the United states
+
+#Assumption is more democratic states, meaning more people should take the vaccine
+
+
+covid_full_vaccinated <- toString(covid_number_fully.vaccinated )
+covid_partail_vaccinated <- toString(covid_number_partially.vaccinated)
+flu_full_vaccinated <-toString(flu_number_usa.vaccine)
+
+
+vaccine.distributed_df = data.frame(y = c(covid_number_fully.vaccinated,covid_number_partially.vaccinated ,flu_number_usa.vaccine))
+
+
+colnames(vaccine.distributed_df ) <- c("COVID fully vaccinated", "Covid partail vaccinated", "Fully Flu vaccination")
+  
+  
+head(vaccine.distributed_df)
+
+```
+It seems that there ware 174 million people that got the flu vaccine in 2020. What is interesting is that if we count fully vaccinated people as our main data point, the figures start looking close. This means that Covid and flu have a similar rate. The data point for 2021 for covid are a little off because it has not been a full year. The flu data has had a full year. Still 164 million verses 174 million, the numbers seem to have a trend. If we use partial as our main data point, the numbers are in covids favor. The data shows 190 million that took one dose verses fully vaccinated which is 174 million.
+
+
+
+
+
+```{r fig.height=10,fig.height=10} 
+#checking state data
+
+states_vaccination_df <- read.csv("data/us_state_vaccinations.csv")
+
+
+# Getting state vaccination records based on state.
+#Getting up to date data records of date and removing us territories and non states, like USA 
+
+states_vaccinated_details_df <- states_vaccination_df %>% filter(date >= as.Date("2021-08-03") 
+                                                              & location!="Veterans Health"
+                                                              &location!= "Republic of Palau"
+                                                              &location!= "Puerto Rico"
+                                                              &location!="Northern Mariana Islands"
+                                                              &location!="Marshall Islands"
+                                                              &location!="Long Term Care"
+                                                              &location!="Indian Health Svc"
+                                                              &location!="Federated States of Micronesia"
+                                                              &location!="Bureau of Prisons"
+                                                              &location!="American Samoa"
+                                                              &location!="Dept of Defense"
+                                                              &location!="Guam"
+                                                              &location!="United States"
+                                                              &location!="Virgin Islands")
+
+
+ggplot(states_vaccinated_details_df, aes(x=location, y=total_vaccinations)) + 
+  geom_bar(stat = "identity") + coord_flip() + ggtitle("Covid Vaccination Results") + xlab("States") + ylab("Frequency")
+
+
+View(states_vaccinated_details_df)
+
+```
+
+California had the largest amount by a land slide. There where other states that also had high numbers. Texas came in second, New York State was third, and then Florida was fourth. This is not shocking. It seems like most states with the highest population are getting the vaccine.
+
+
+
+```{r fig.height=10,fig.height=10}
+
+
+#Now we need to combine the data between political affiliation and COVID when it comes to states. States are now defined by their political standing based off of presidential election.
+
+colnames(states_vaccinated_details_df)[colnames(states_vaccinated_details_df) == 'location'] <- 'state'
+
+#Merging data between political data and covid state data , unique reference state.
+
+merged.politicalAff_CovidVaccine_df <- merge(states_vaccinated_details_df, political.selectState_df , by='state')
+
+
+political_covid_results.condensed_df <- merged.politicalAff_CovidVaccine_df %>% select(state,political_standing,total_vaccinations)
+
+
+ggplot(political_covid_results.condensed_df, aes(x=political_standing, y=total_vaccinations)) + 
+  geom_bar(stat = "identity")  + ggtitle("Covid Vaccination Results") + xlab("States") + ylab("Frequency")
+
+```
+
+It seems that blue states have a higher number of vaccine totals than red states. This fits the theory that we first established. There are more blue votes than red votes. 
+
+
+
+```{r}
+#Comparing results to total population of people.
+#Google population according to google population index
+
+
+california_population <- toString(format( 39.51 * 1000000, scientific = FALSE))
+  
+oklahoma_population <- toString(format( 3.957 * 1000000, scientific = FALSE))
+
+florida_population <- toString(format( 21.60  * 1000000, scientific = FALSE))
+
+colorado_population <- toString(format( 5.759  * 1000000, scientific = FALSE))
+
+texas_population <- toString(format( 29  * 1000000, scientific = FALSE))
+
+
+
+#Getting only the state feilds to compare.
+california_df <- political_covid_results.condensed_df[ which( political_covid_results.condensed_df$state =="California"), ]
+oklahoma_df <- political_covid_results.condensed_df[ which(political_covid_results.condensed_df$state == "Oklahoma") ,]
+florida_df <- political_covid_results.condensed_df[ which(political_covid_results.condensed_df$state == "Florida") ,]
+colorado_df <- political_covid_results.condensed_df[ which(political_covid_results.condensed_df$state == "Colorado") ,]
+texas_df <- political_covid_results.condensed_df[ which(political_covid_results.condensed_df$state == "Texas") ,]
+
+
+#comparing the states and population records
+California_compare_df <- c(california_df$total_vaccinations,california_population )
+
+Oklahoma_compare_df <- c(oklahoma_df$total_vaccinations, oklahoma_population)
+
+Florida_compare_df <- c(florida_df$total_vaccinations, florida_population)
+
+Colorado_compare_df <- c(colorado_df$total_vaccinations , colorado_population)
+
+Texas_compare_df <- c(texas_df$total_vaccinations , texas_population)
+
+
+str(California_compare_df)
+str(Oklahoma_compare_df)
+str(Florida_compare_df)
+str(Colorado_compare_df)
+str(Texas_compare_df)
+
+```
+The numbers reflect that the total number of vaccines are not based off of individuals but rather the number of shots that one is given. For example, California has more people that got the shot then the actual people that live there. A whopping 45,383,289 vaccine injections given vs their population 39,510,000.
+
+
+
+```{r}
+# Due to the fact that the numbers are reflected on per shot and not per person, a conversion needs to be made
+# This is an assumption based off the value of the shot. Could this data have mixed between a person having #to take 2 shots verses one? For this reason, we will assume it is two.
+
+
+cf_conversion_people <- as.integer(california_df$total_vaccinations) / 2
+ok_conversion_people <- as.integer(oklahoma_df$total_vaccinations) / 2
+fl_conversion_people <- as.integer(florida_df$total_vaccinations) / 2
+co_conversion_people <- as.integer(colorado_df$total_vaccinations) / 2
+tx_conversion_people <- as.integer(texas_df$total_vaccinations) / 2
+
+state_percentage_cf <- (cf_conversion_people / as.integer(california_population)) * 100
+state_percentage_ok <- (ok_conversion_people / as.integer(oklahoma_population)) * 100
+state_percentage_fl <- (fl_conversion_people / as.integer(florida_population)) * 100
+state_percentage_co <- (co_conversion_people / as.integer(colorado_population)) * 100
+state_percentage_tx <- (tx_conversion_people / as.integer(texas_population)) * 100
+
+blue.state_df <- c(state_percentage_cf, state_percentage_co)
+red.state_df <- c(state_percentage_ok,state_percentage_fl, state_percentage_tx)
+
+blue.state_df
+red.state_df
+```
+
+
+```{r fig.height=10,fig.height=10}
+# Building a logistic model because there are only two options: red or blue and republicans or democrats
+
+political_vaccine_bin.muted_df <- political_covid_results.condensed_df %>% mutate(political_standing = case_when(political_standing == "Red" ~ 0 ,political_standing == "Blue" ~ 1))
+
+
+
+vaccine_political_glm <- glm(political_standing ~ total_vaccinations, data = political_vaccine_bin.muted_df, family = "binomial")
+
+
+summary(vaccine_political_glm)
+
+```
+
+
+<b> <font size="4"> What does the final data set look like</font></b> \
+The final data indicates that there is some influence on political standing and covid vaccines. What was interesting was combining the data to classify the state by political standing and seeing that there are more blue states taking the vaccine. What is interesting is that there are as many flu vaccinations in 2020 as there are partly covid vaccinated people.
+
+<b> <font size="4"> What information is not self-evident</font></b> \
+What is not evident is explaining how many people actually got vaccinated. It gives the number of shots distributed. At this point in the data, I made an assumption based on what the data was indicating. Because of this, the numbers could actually be skewed and have less people than originally thought. My first impression was that this was the number of people getting the vaccine not the doses. Also, another part was that age could have played a bigger portion of it. How are other websites classifying a population by adults or the whole?
+
+<b> <font size="4"> Other Questions</font></b> \
+1. How are we basing the population? \
+2. Should we care about partial vaccination? \
+3. Does this prove that the flu vaccine and covid vaccine are similar in numbers? \
+4. Does the flu vaccine follow the same political line we saw in the data? \
+5. If the state changes political standing, would that effect the overall outcome? \
+
+
+<b> <font size="4"> Other ways to look at this data</font></b> \
+Another way to look at this data is a starting point. This is a big topic and in this study only 5 states were monitored. The other information strengthens the the result. One issue with this is we need to look into age. With this, we could have a bigger picture of the results. We could always analyze more states individually.
+ 
+
+
+<b> <font size="4"> How could you summarize your data to answer key questions?</font></b> \
+The number of flu vaccines was close to fully vaccinated covid results. In fact, more people had the flu shot. Perhaps the model for the flu vaccine could have been used to predict which individuals would take the covid vaccine. I took the total number of partial and fully vaccinated people to get the next results. I counted partially vaccinated people as well. This gives a better idea to the number of people that are in the process.
+The states aligned blue had more vaccine totals. The 4 out of the 5 states used fell under the hypothesis. If we count the total of people, Florida seemed to be the outlier. If we used fully vaccinated people, Florida falls back under its red state. Overall, being in a blue or red state is a good classifier to getting the vaccine. 
+
+
+<b> <font size="4"> The plots I ended up using</font></b> \
+I did not get to use a histogram, but I did get to use the others. The other graphs were not needed after giving it a lot of thought. One graph that I enjoy to look at is the inverted bar graph. It highlights everything in good fashion.
+
+
+<b> <font size="4"> Machine model</font></b> \
+
+I did include a logistic model, but it was not used for the overall premise of the article. I used it to see if there was a predictor between red states and blue states. I converted it into a binomial to check. It was interesting to take notice of the outcome. However, it was not used to describe the other data.
+
+<br>
+<br>
+<br>
+
+<b> <font size="4"> Citation</font></b> \
+
+[@PoliticalTracker] \
+[@FLUBYUSA] \
+[@OWDFLUBYUSA] \
+[@CDCSTATEVACCINATIONS] \
+[@CDCCOVIDBYCOUNTRIES] \
+[@CDCCOVIDBYSTATE]  
