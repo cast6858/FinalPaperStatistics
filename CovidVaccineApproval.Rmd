@@ -127,7 +127,8 @@ library(ggplot2)
 political.affliation_df <- read.csv("data/Popular vote backend.csv")
 #view(political.affliation)
 
-# removing none states with political influence and territories should only be 50
+# Removing none states with political influence and territories should only be 50
+# Dividing the states based on their political standing based on presidentals election.
 political.states_df <- political.affliation_df %>% filter(stateid != "" & nchar(stateid) < 3)
 
 political.mutate_df <- political.states_df %>% mutate(political_standing = 
@@ -140,7 +141,7 @@ political.mutate_df %>% ggplot(aes(x=as.factor(political_standing))) +  geom_bar
 
 
 View(political.mutate_df)
-#sending on the abv and affiliation standing to  to be process in the next phase 
+#sending on the state and color affiliation standing to  to be process in the next phase 
 #condensed version political standing
 political.selectState_df <- political.mutate_df %>%  select(state,political_standing)
 
@@ -163,6 +164,8 @@ influenza_df <- read.csv("data/influenza_vaccine_doses_distributed_in_the_united
 reAjustedDate.X <- c("08-09", "09-10", "10-11" , "11-12","12-13", "13-14", "14-15","15-16","16-17","17-18" ,"18-19","19-20")
 
 
+#Adding graph to show Flu line  graph.
+
 
 ggplot(data=influenza_df ,aes(x=Date, y=Cases_By_Mil, group=1)) +geom_line()+ ggtitle("Influenza Vaccine Injected") + xlab("Years 2008 - 2020") + ylab("Cases By Millions") + geom_point() + scale_x_discrete(labels= reAjustedDate.X )
 
@@ -183,8 +186,6 @@ flu_number_usa.vaccine <-  toString(format(flu_number_usa.vaccine_numeric, scien
 
 flu_number_usa.vaccine
 
-
-  #scale_y_discrete(labels= reAjustedCases.Y)
 ```
 
 #look for AK
@@ -195,7 +196,7 @@ flu_number_usa.vaccine
 
 covid_df <- read.csv("data/owid-covid-data.csv")
 
-#continent
+#Getting three parts fully vaccinated , partial , and combined data.
 
 
 covid_number_fully.vaccinated <- covid_df %>% filter(iso_code == "USA" & date == "2021-07-31") %>% select(people_fully_vaccinated)
@@ -254,7 +255,7 @@ It seems that there ware 174 million people that got the flu vaccine in 2020. Wh
 states_vaccination_df <- read.csv("data/us_state_vaccinations.csv")
 
 
-
+# Getting state vaccination records based on state.
 #Getting up to date data records of date and removing us territories and non states, like USA 
 
 states_vaccinated_details_df <- states_vaccination_df %>% filter(date >= as.Date("2021-08-03") 
@@ -278,7 +279,7 @@ ggplot(states_vaccinated_details_df, aes(x=location, y=total_vaccinations)) +
   geom_bar(stat = "identity") + coord_flip() + ggtitle("Covid Vaccination Results") + xlab("States") + ylab("Frequency")
 
 
-#View(states_vaccinated_details)
+View(states_vaccinated_details_df)
 
 ```
 
@@ -289,9 +290,11 @@ California had the largest amount by a land slide. There where other states that
 ```{r fig.height=10,fig.height=10}
 
 
-#Now we need to combine data between political affiliation and COVID when it comes to states. States are now defined by their political standing based off of presidential election.
+#Now we need to combine the data between political affiliation and COVID when it comes to states. States are now defined by their political standing based off of presidential election.
 
 colnames(states_vaccinated_details_df)[colnames(states_vaccinated_details_df) == 'location'] <- 'state'
+
+#Merging data between political data and covid state data , unique reference state.
 
 merged.politicalAff_CovidVaccine_df <- merge(states_vaccinated_details_df, political.selectState_df , by='state')
 
@@ -309,9 +312,9 @@ It seems that blue states have a higher number of vaccine totals than red states
 
 
 ```{r}
-
-#select(people_vaccinated)
+#Comparing results to total population of people.
 #Google population according to google population index
+
 
 california_population <- toString(format( 39.51 * 1000000, scientific = FALSE))
   
@@ -324,6 +327,8 @@ colorado_population <- toString(format( 5.759  * 1000000, scientific = FALSE))
 texas_population <- toString(format( 29  * 1000000, scientific = FALSE))
 
 
+
+#Getting only the state feilds to compare.
 california_df <- political_covid_results.condensed_df[ which( political_covid_results.condensed_df$state =="California"), ]
 oklahoma_df <- political_covid_results.condensed_df[ which(political_covid_results.condensed_df$state == "Oklahoma") ,]
 florida_df <- political_covid_results.condensed_df[ which(political_covid_results.condensed_df$state == "Florida") ,]
@@ -331,6 +336,7 @@ colorado_df <- political_covid_results.condensed_df[ which(political_covid_resul
 texas_df <- political_covid_results.condensed_df[ which(political_covid_results.condensed_df$state == "Texas") ,]
 
 
+#comparing the states and population records
 California_compare_df <- c(california_df$total_vaccinations,california_population )
 
 Oklahoma_compare_df <- c(oklahoma_df$total_vaccinations, oklahoma_population)
@@ -355,7 +361,7 @@ The numbers reflect that the total number of vaccines are not based off of indiv
 
 ```{r}
 # Due to the fact that the numbers are reflected on per shot and not per person, a conversion needs to be made
-# This is an assumption based off the value of the shot. Could this data have mixed between a #person having to take 2 shots verses one? For this reason, we will assume it is two.
+# This is an assumption based off the value of the shot. Could this data have mixed between a person having #to take 2 shots verses one? For this reason, we will assume it is two.
 
 
 cf_conversion_people <- as.integer(california_df$total_vaccinations) / 2
