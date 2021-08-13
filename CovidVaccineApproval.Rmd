@@ -9,7 +9,6 @@ output:
 bibliography: bibliography.bib
 ---
 
-
 #Start of week 8 final part one
 
 <b> <font size="4"> Introduction</font></b> \

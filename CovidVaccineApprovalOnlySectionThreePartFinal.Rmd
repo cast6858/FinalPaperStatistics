@@ -14,8 +14,6 @@ bibliography: bibliography.bib
 The focus of my study was to see two things. Are the number of flu cases relatable to covid cases in regards to the vaccine acceptance? Also, are the vaccine approvals based on a states political standing? 
 Over the past year and a half, we've been affected by a virus that has changed the world forever. Over the past few months, we have seen both a divide in people going to get the COVID vaccine and others who have refused to take it. However, are these reactions new or could past history predict the outcome? Even if the outcome could not have been predicted, maybe we can find a correlation in the data. The information is important for both political and medical reasons. On the political side, it could help with their approvals. On the medical side, we could determine how many vaccine shots to get. At this point, there are way more covid vaccinations than people taking them.
 
-
-
 <b> <font size="4">The problem statement you addressed</font></b> \
 
 Recently, we have been given a choice to either take the vaccine or not. The reality is that some people dislike that choice. Some people want the vaccine to be mandatory. Others dislike the idea of taking the vaccine. Work places are starting to make it a requirement to keep employment. Law suits are being filed with people that do not want to take it. With growing concerns over the new variants, the status quo doesn't seem to change. The hypothesis is that this is due to political standing inside the states. Meaning that in a red state people are more likely to not take the vaccine and be strongly opposed to mandatory influences. The blue states, however, are more likely to take the vaccine and be open to mandatory vaccines. The example I gave was comparing states like Texas, a confirmed red state, with California, a confirmed blue state. The most shocking question is could these results have been predicted with past vaccine results. For instance, could we say that in the future, red states are more likely to refuse a vaccine? 
@@ -50,11 +48,14 @@ The why is still far from being found.
 
 
 
+<b> <font size="4">Data Gathered Thoughts</font></b> \
+Either there was to much data or there wast enough. It almost seemed like to much data that didnt have a purpose. There were alot more columns then I thought.It required me  to go through the excel sheet multiple times just to find which the values to extract. I will say that the validity of my current assessment is all based on the CDC. One thing I wonder, is if another data source other the CDC publish a report would the data be close? To be able to refine the data , I would recommend comparing it to other source. It almost seemed to difficult to get other data. Alot of website were closed off where you couldnt access it , without some type of permission. The only data sources that were used are our world data and the cdc. 
+
+
 <b> <font size="4">Concluding Remarks</font></b> \
 
 
 Overall, the project was fun. It gave me a lot of insight to real data science techniques. What they say is true that 80% of my time was spent cleaning and rearranging data. The problem with a lot of data that I found was that there was a lot of noise. A lot of the values that were in the data sets did not even make sense. In fact, regarding state information, it took me a while to realize that the vaccine was counted in doses and not people. The graphs that were built were interactive and gave a lot of information. I can say I will leave this class with a whole lot more skills then when I came in.
-
 
 
 
